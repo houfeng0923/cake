@@ -1,16 +1,6 @@
-.DS_Store
-build/
-.metadata
-.settings
-tmp/**/*
-Thumbs.db
-*.tmp
-Desktop.ini
-*.bak
-*.swp
-*.class
-*.jar
-*.keep
-# IntelliJ IDEA files
-*.iml
-.idea
+node_modules/
+**/.*
+!.editorconfig
+!.gitignore
+!.npmignore
+!.travis.yml
