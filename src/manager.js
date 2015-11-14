@@ -10,6 +10,9 @@ define(['./utils'], function(utils) {
 
   var ComponentsManager;
 
+  /**
+   * 组件信息类
+   */
   function ComponentInfo(component) {
     this.component = component;
     this.attachedTo = [];
@@ -25,7 +28,7 @@ define(['./utils'], function(utils) {
 
     this.removeInstance = function(instance) {
       delete this.instances[instance.id];
-      var indexOfNode = this.attachedTo.indexOf(instance.element);
+      var indexOfNode = utils.inArray(instance.element,this.attachedTo);
       (indexOfNode > -1) && this.attachedTo.splice(indexOfNode, 1);
 
 
@@ -36,10 +39,13 @@ define(['./utils'], function(utils) {
     };
 
     this.isAttachedTo = function(element) {
-      return this.attachedTo.indexOf(element) > -1;
+      return utils.inArray(element,this.attachedTo) > -1 ; 
     };
   }
 
+  /**
+   * 组件实例信息类
+   */
   function InstanceInfo(instance) {
     this.instance = instance;
     this.events = [];
@@ -59,17 +65,28 @@ define(['./utils'], function(utils) {
     };
   }
 
+
+  /**
+   * 组件管理器
+   */
   ComponentsManager = {
     components: [],
     allInstances: {},
     // events: [],
 
+    /**
+     * 重置
+     */
     reset: function() {
       this.components = [];
       this.allInstances = {};
       // this.events = [];
     },
 
+
+    /**
+     * 添加一个实例到管理器
+     */
     addInstance: function(instance) {
       var component = this.findComponentInfo(instance);
 
@@ -85,8 +102,12 @@ define(['./utils'], function(utils) {
       return component;
     },
 
+
+    /**
+     * 移除一个实例
+     */
     removeInstance: function(instance) {
-      var index, instInfo = this.findInstanceInfo(instance);
+      // var index, instInfo = this.findInstanceInfo(instance);
 
       //remove from component info
       var componentInfo = this.findComponentInfo(instance);
@@ -96,11 +117,19 @@ define(['./utils'], function(utils) {
       delete this.allInstances[instance.id];
     },
 
+
+    /**
+     * 移除一个组件类
+     */
     removeComponentInfo: function(componentInfo) {
-      var index = this.components.indexOf(componentInfo);
+      var index = utils.inArray(componentInfo,this.components);
       (index > -1) && this.components.splice(index, 1);
     },
 
+
+    /**
+     * 根据实例获取对应的组件信息类
+     */
     findComponentInfo: function(which) {
       var component = which.attachTo ? which : which.constructor;
 
@@ -113,10 +142,18 @@ define(['./utils'], function(utils) {
       return null;
     },
 
+
+    /**
+     * 根据实例查找对应的实例信息类
+     */
     findInstanceInfo: function(instance) {
       return this.allInstances[instance.id] || null;
     },
 
+
+    /**
+     * 根据dom节点查找实例信息类
+     */
     findInstanceInfoByNode: function(node) {
       var result = [];
       utils.each(utils.keys(this.allInstances),function(k) {
@@ -124,7 +161,7 @@ define(['./utils'], function(utils) {
         if (thisInstanceInfo.instance.element === node) {
           result.push(thisInstanceInfo);
         }
-      },this)
+      },this);
       
       return result;
     }
@@ -132,5 +169,5 @@ define(['./utils'], function(utils) {
   };
 
 
-  return ComponentsManager
+  return ComponentsManager;
 });

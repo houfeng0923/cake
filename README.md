@@ -1,3 +1,4 @@
-#Cake - lightweight component framework
+#Cake
 
-see u  next year
+lightweight component framework
+

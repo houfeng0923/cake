@@ -1,16 +1,22 @@
-//
+/*
+  工具类。提供一些常用的工具方法。
+  职责：对jquery一些工具方法的包装、补充。
+  原始目标是隔离cake对jquery的依赖，目前看来意义不是很大（大量jquery $ 的运用）
+  
+ */
 define(['jquery'], function($) {
 
   "use strict";
 
   var nativeForEach = Array.prototype.forEach,
+    nativeFilter = Array.prototype.filter,
     nativeMap = Array.prototype.map,
     hasOwnProperty = Object.prototype.hasOwnProperty;
 
   var utils = {
 
     guid: function() {
-      return $.guid++
+      return $.guid++;
     },
 
     // ---------- oop -----------------
@@ -21,7 +27,7 @@ define(['jquery'], function($) {
         if (superCls.hasOwnProperty(p)) subCls[p] = superCls[p];
 
       function F() {
-        this.delegateclass = subCls.prototype
+        this.delegateclass = subCls.prototype;
       }
 
       F.prototype = superCls.prototype;
@@ -35,7 +41,7 @@ define(['jquery'], function($) {
         superCls.prototype.constructor = superCls;
       }
 
-      utils.mixin(subCls.prototype, proto)
+      utils.mixin(subCls.prototype, proto);
     },
 
 
@@ -55,6 +61,10 @@ define(['jquery'], function($) {
       }
     },
 
+    // ----------array --------------
+    inArray:$.inArray,
+
+
     // ---------- collection ------------
     each: function(obj, iterator, context) {
       if (obj == null) return;
@@ -73,6 +83,16 @@ define(['jquery'], function($) {
       }
     },
 
+    filter : function(obj, iterator, context) {
+      var results = [];
+      if (obj == null) return results;
+      if (nativeFilter && obj.filter === nativeFilter) return obj.filter(iterator, context);
+      this.each(obj, function(value, index, list) {
+        if (iterator.call(context, value, index, list)) results.push(value);
+      });
+      return results;
+    },
+
     map: function(obj, iterator, context) {
       var results = [];
       if (obj == null) return results;
@@ -81,6 +101,38 @@ define(['jquery'], function($) {
         results[results.length] = iterator.call(context, value, index, list);
       });
       return results;
+    },
+
+    getRootDomain: function(domains) {
+      if (typeof domains != 'string')
+        throw new Error('wrong domain input!!');
+
+      var domain_name = ['com','net','org','gov','edu'],
+        rd = [],// root domain array
+        da = domains.split('.'),// domain array
+        l = da.length;
+
+      if (da.length<2)
+        throw new Error('wrong domain format!');
+
+      rd.unshift(da.pop());
+      if (rd[0] == 'cn') {
+        rd.unshift(da.pop());
+        for (var i=0;i<l;i++) {
+          if (rd[1]==domain_name[i])
+            return rd.unshift(da.pop()).join('.');
+        }
+        return rd.join('.');
+      } else {
+        for (i=0;i<l;i++) {
+          if (rd[0]==domain_name[i])//验证域名合法性
+            return rd.unshift(da.pop()).join('.');
+        }
+        // 如果输入域名末位不是['com','net','org','gov','edu']
+        // 也不是'cn'
+        // 所以，不是合法域名
+        throw new Error('wrong domain format!');
+      }
     },
 
     keys: Object.keys || function(obj) {
@@ -93,7 +145,9 @@ define(['jquery'], function($) {
       }
       return ret;
     }
-  }
+  };
+
+
 
   /**
    * isArray,isFunction,isString,isNumber,isDate,isRegExp
@@ -106,5 +160,6 @@ define(['jquery'], function($) {
 
 
 
+
   return utils;
-})
+});

@@ -1,7 +1,5 @@
 /**
- * 为组件提供基本的业务事件注册和监听机制
- * todo: debugger
- * couple $element ?? 
+ * 为组件提供基本的业务事件注册和监听机制　
  */
 define(['./utils', './eventbus','./event-handle'], function(utils, eventbus, EventHandle) {
 
@@ -31,22 +29,22 @@ define(['./utils', './eventbus','./event-handle'], function(utils, eventbus, Eve
         callback.guid = originalCb.guid;
       }
 
-      args[lastIndex] = callback
+      args[lastIndex] = callback;
 
-      this.$element.on.apply(this.$element, args)
+      this.$element.on.apply(this.$element, args);
 
       // get jquery's guid from our bound fn, so unbinding will work
       originalCb.guid = callback.guid;
 
       // return callback;
-      var eventInfo = args.length==4? args.slice(2,1):args.slice()
-      return new EventHandle(this,'dom',eventInfo)
+      var eventInfo = args.length==4? args.slice(2,1):args.slice();
+      return new EventHandle(this,'dom',eventInfo);
     },
 
     //为组件dom元素移除事件监听
     //this.off('type',[selector],callback)
     off: function() {
-      return this.$element.off.apply(this.$element, arguments)
+      return this.$element.off.apply(this.$element, arguments);
     },
 
 
@@ -55,13 +53,8 @@ define(['./utils', './eventbus','./event-handle'], function(utils, eventbus, Eve
       this.publish('hello',[{thisis:'houfeng'}]) //[]:optional 
      */
     publish: function() {
-
-      // type = event.type || event;
-      // if (debug.enabled && window.postMessage) {
-      //   checkSerializable.call(this, type, data);
-      // }
-
-      eventbus.publish.apply(this, arguments)
+　
+      eventbus.publish.apply(this, arguments);
       return this;
     },
     /*
@@ -83,14 +76,14 @@ define(['./utils', './eventbus','./event-handle'], function(utils, eventbus, Eve
       if (originalCb.guid) {
         callback.guid = originalCb.guid;
       }
-      var handler = eventbus.sub(type, callback);
+      eventbus.sub(type, callback);
       //todo 
 
       // get jquery's guid from our bound fn, so unbinding will work
       originalCb.guid = callback.guid;
 
       // return callback;
-      return new EventHandle(this,'custom',[type,originalCb])
+      return new EventHandle(this,'custom',[type,originalCb]);
     },
 
     /*
@@ -111,19 +104,18 @@ define(['./utils', './eventbus','./event-handle'], function(utils, eventbus, Eve
       // callback.target = originalCb;
 
       function OnceCallback(e) {
-        this.unsubscribe(e);
+        this.unsubscribe(e,OnceCallback);
         callback();
       }
       OnceCallback.target = originalCb;
 
       OnceCallback.guid = originalCb.guid || (originalCb.guid = utils.guid());
 
-      return this.subscribe(type, OnceCallback)
+      return this.subscribe(type, OnceCallback);
     },
 
     /*
-     * this.unsubscribe('hello',callbackFn)
-     * todo 测试 callbackFn 是否顺利，因为 subscribe时绑定的是代理函数
+     * this.unsubscribe('hello',callbackFn)　
      */
     unsubscribe: function() {
 
@@ -132,13 +124,13 @@ define(['./utils', './eventbus','./event-handle'], function(utils, eventbus, Eve
       if (typeof callback != 'function') {
         throw new Error("missing arguments(callback) or giving arguments(callback) is not a function");
       }
-      eventbus.unsub.apply(this, arguments)
+      eventbus.unsub.apply(this, arguments);
 
       return this;
     }
-  }
+  };
 
   return EventTarget;
 
 
-})
+});

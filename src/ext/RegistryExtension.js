@@ -8,18 +8,14 @@ define(['../utils', '../manager','../event-handle'], function(utils, manager, Ev
   
   function RegistryExtension() { 
     this.before('initialize', function() {  
-      manager.addInstance(this)
-    })
-    this.around('on', registry.on)
-    this.after('off', registry.off)
-    
-    //debug tools may want to add advice to trigger
-    // window.DEBUG && DEBUG.enabled && this.after('trigger', registry.trigger); //and  this.publish
-    
-    this.around('subscribe',registry.subscribe)
-    this.after('unsubscribe',registry.unsubscribe)
-
-    // this.after('teardown', registry.teardown);
+      manager.addInstance(this);
+    });
+    this.around('on', registry.on);
+    this.after('off', registry.off);
+     
+    this.around('subscribe',registry.subscribe);
+    this.after('unsubscribe',registry.unsubscribe);
+ 
     this.after('destroy', registry.destroy);
   }
 
@@ -27,14 +23,11 @@ define(['../utils', '../manager','../event-handle'], function(utils, manager, Ev
 
 
   var registry = {
-
-    // debug tools may want to add advice to trigger
+ 
     trigger: function() {},
 
     on: function(componentOn) {
-      var instance = manager.findInstanceInfo(this),eventHandle,
-        boundCallback;
-      // unpacking arguments by hand benchmarked faster
+      var instance = manager.findInstanceInfo(this),eventHandle; 
       var l = arguments.length,
         i = 1;
       var otherArgs = new Array(l - 1);
@@ -43,16 +36,8 @@ define(['../utils', '../manager','../event-handle'], function(utils, manager, Ev
       eventHandle = componentOn.apply(null,otherArgs);
 
       if(instance){
-        instance.addBind(eventHandle)
-      } 
-      // if (instance) {
-      //   boundCallback = componentOn.apply(null, otherArgs);
-      //   if (boundCallback) {
-      //     otherArgs[otherArgs.length - 1] = boundCallback;
-      //   }
-      //   var event = parseEventArgs(this, otherArgs);
-      //   instance.addBind(event);
-      // }
+        instance.addBind(eventHandle);
+      }  
     },
 
     off: function( /*type,[selector], callback*/ ) { 
@@ -61,17 +46,11 @@ define(['../utils', '../manager','../event-handle'], function(utils, manager, Ev
 
       if (instance) {
         instance.removeBind(event);
-      }
-      // //remove from global event manager
-      // for (var i = 0, e; e = manager.events[i]; i++) {
-      //   if (e.equals(event)) {
-      //     manager.events.splice(i, 1);
-      //   }
-      // }
+      } 
     },
 
     subscribe:function() {
-      registry.on.apply(this,arguments)
+      registry.on.apply(this,arguments);
     },
 
     unsubscribe:function(/*type,callback*/) {
@@ -80,13 +59,7 @@ define(['../utils', '../manager','../event-handle'], function(utils, manager, Ev
 
       if (instance) {
         instance.removeBind(event);
-      }
-      // //remove from global event manager
-      // for (var i = 0, e; e = manager.events[i]; i++) {
-      //   if (e.equals(event)) {
-      //     manager.events.splice(i, 1);
-      //   }
-      // }
+      } 
     },
 
     destroy: function() {
@@ -94,12 +67,12 @@ define(['../utils', '../manager','../event-handle'], function(utils, manager, Ev
       var instanceInfo = manager.findInstanceInfo(this);
       utils.each(instanceInfo.events,function(eventInfo){
         eventInfo.detach();
-      }) 
+      }) ;
       manager.removeInstance(this);
     }
-  }
+  };
 
 
 
-  return RegistryExtension
+  return RegistryExtension;
 });
