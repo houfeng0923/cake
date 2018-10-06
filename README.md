@@ -141,9 +141,9 @@ lightweight component framework
 
 
 
-##TODO
+## TODO
 
-### BindExtension todo
+### BindExtension
 
     // one : 单向 model->view
     define(['utils'],function (utils){
